@@ -22,6 +22,11 @@
 
 from pid import PIDAgent
 from keyframes import hello
+from keyframes import wipe_forehead
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import *
 
 
 class AngleInterpolationAgent(PIDAgent):
@@ -38,13 +43,39 @@ class AngleInterpolationAgent(PIDAgent):
         self.target_joints.update(target_joints)
         return super(AngleInterpolationAgent, self).think(perception)
 
-    def angle_interpolation(self, keyframes, perception):
+    def angle_interpolation(self, keyframes, perception): #TODO
         target_joints = {}
         # YOUR CODE HERE
+        for i in range(len(keyframes[0])):
+            names = keyframes[0][i]
+            times = np.asarray(keyframes[1][i])
+            angles = np.asarray([row[0] for row in keyframes[2][i]])
+            yp = np.asarray([row[1][2] for row in keyframes[2][i]])
+            time = perception.time
+
+            '''plt.plot(times, angles, 'o')
+            plt.show()'''
+
+            x_i = np.linspace(np.min(times),np.max(times),100)
+
+            if len(angles) >= 3:
+                f_spline = interp1d(times, angles, kind='cubic')
+                y_i = f_spline(x_i)
+            else:
+                f_spline = interp1d(times, angles, kind='slinear')
+                y_i = f_spline(x_i)
+
+            '''plt.plot(x_i,y_i,'--')
+            plt.plot(times, angles, 'o')
+            plt.title(names)
+            plt.show()'''
+
+            target_joints[names] = f_spline(max(time % times[-1],min(times)))
 
         return target_joints
 
 if __name__ == '__main__':
     agent = AngleInterpolationAgent()
-    agent.keyframes = hello()  # CHANGE DIFFERENT KEYFRAMES
+    #agent.keyframes = hello()  # CHANGE DIFFERENT KEYFRAMES
+    agent.keyframes = wipe_forehead(0)
     agent.run()
