@@ -58,7 +58,7 @@ class AngleInterpolationAgent(PIDAgent):
 
             x_i = np.linspace(np.min(times),np.max(times),100)
 
-            if len(angles) >= 3:
+            if len(angles) > 3:
                 f_spline = interp1d(times, angles, kind='cubic')
                 y_i = f_spline(x_i)
             else:

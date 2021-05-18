@@ -8,6 +8,10 @@
 
 from recognize_posture import PostureRecognitionAgent
 
+from os import listdir
+
+from keyframes import leftBackToStand, leftBellyToStand, rightBackToStand, rightBellyToStand
+
 
 class StandingUpAgent(PostureRecognitionAgent):
     def think(self, perception):
@@ -17,6 +21,15 @@ class StandingUpAgent(PostureRecognitionAgent):
     def standing_up(self):
         posture = self.posture
         # YOUR CODE HERE
+        classes = listdir('robot_pose_data')
+
+        if posture[0] != 'u':
+            #print(classes[int(posture[0])])
+
+            if classes[int(posture[0])] == 'Back':
+                agent.keyframes = leftBackToStand()
+            elif classes[int(posture[0])] == 'Belly':
+                agent.keyframes = rightBellyToStand()
 
 
 class TestStandingUpAgent(StandingUpAgent):

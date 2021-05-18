@@ -18,6 +18,8 @@ import numpy as np
 from collections import deque
 from spark_agent import SparkAgent, JOINT_CMD_NAMES
 
+import matplotlib.pyplot as plt
+
 
 class PIDController(object):
     '''a discretized PID controller, it controls an array of servos,
@@ -34,10 +36,13 @@ class PIDController(object):
         self.e1 = np.zeros(size)
         self.e2 = np.zeros(size)
         # ADJUST PARAMETERS BELOW # TODO
-        delay = 0
-        self.Kp = 15
-        self.Ki = 0.10
-        self.Kd = 0.10
+        delay = 3
+
+        self.cycle = 0
+
+        self.Kp = 10
+        self.Ki = 0.001
+        self.Kd = 0.05
         self.y = deque(np.zeros(size), maxlen=delay + 1)
 
     def set_delay(self, delay):
@@ -52,18 +57,21 @@ class PIDController(object):
         @param sensor: current values from sensor
         @return control signal
         '''
-        # YOUR CODE HERE # TODO
-        #self.u = self.y.popleft()
 
-        etk = target - sensor
-        self.u = self.u + (self.Kp+self.Ki*self.dt+self.Kd/self.dt)*etk - (self.Kp + 2*self.Kd/self.dt)*self.e1+self.Kd/self.dt*self.e2
+        # the motor in simulation can simple modelled by angle(t) = angle(t - 1) + speed * dt
+        # YOUR CODE HERE #
+
+
+        self.y.append(self.u * self.dt)
+
+        etk = target - sensor + self.y[0]
+        self.u = self.u + (self.Kp + self.Ki * self.dt + self.Kd / self.dt) * etk - (self.Kp + 2 * self.Kd / self.dt) * self.e1 + self.Kd / self.dt * self.e2
 
         self.e2 = self.e1
         self.e1 = etk
 
-        #self.y.append(self.u)
-
         return self.u
+
 
 
 class PIDAgent(SparkAgent):
@@ -95,4 +103,6 @@ class PIDAgent(SparkAgent):
 if __name__ == '__main__':
     agent = PIDAgent()
     agent.target_joints['HeadYaw'] = 1.0
+    #agent = TestStandingUpAgent()
+
     agent.run()
