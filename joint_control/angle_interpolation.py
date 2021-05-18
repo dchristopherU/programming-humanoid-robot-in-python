@@ -70,7 +70,12 @@ class AngleInterpolationAgent(PIDAgent):
             plt.title(names)
             plt.show()'''
 
+
+
             target_joints[names] = f_spline(max(time % times[-1],min(times)))
+
+            if "LHipYawPitch" in target_joints:
+                target_joints["RHipYawPitch"] = target_joints["LHipYawPitch"]
 
         return target_joints
 

@@ -40,7 +40,7 @@ class PIDController(object):
 
         self.cycle = 0
 
-        self.Kp = 10
+        self.Kp = 20
         self.Ki = 0.001
         self.Kd = 0.05
         self.y = deque(np.zeros(size), maxlen=delay + 1)
@@ -60,6 +60,12 @@ class PIDController(object):
 
         # the motor in simulation can simple modelled by angle(t) = angle(t - 1) + speed * dt
         # YOUR CODE HERE #
+
+        '''if self.cycle % 50 == 0:
+            X = np.arange(0,22,1)
+            plt.plot(X,sensor,'o')
+            plt.show()'''
+
 
 
         self.y.append(self.u * self.dt)
