@@ -112,7 +112,7 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
 if __name__ == '__main__':
     agent = InverseKinematicsAgent()
     # test inverse kinematics
-    T = identity(4)
+    T = np.identity(4)
     T[-1, 1] = 0.05
     T[-1, 2] = 0.26
     agent.set_transforms('LLeg', T)
